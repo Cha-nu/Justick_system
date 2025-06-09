@@ -1,3 +1,4 @@
+from selenium.webdriver.firefox.service import Service
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
@@ -72,7 +73,9 @@ class Crawler:
 
             for label, url, items in sections:
                 print(f"{label} 시작")
-                driver = webdriver.Firefox(options=self.options)
+                service = Service(executable_path="/usr/local/bin/geckodriver")
+                driver = webdriver.Firefox(service=service, options=self.options)
+
                 wait = WebDriverWait(driver, 20)
                 driver.get(url)
                 time.sleep(15)
@@ -142,4 +145,3 @@ class Crawler:
                 print("드라이버 정상 종료됨")
             except:
                 print("드라이버 종료 실패")
-

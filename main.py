@@ -8,15 +8,20 @@ import playsound
 
 if __name__ == "__main__":
     try:
+    	# 크롤러
         Crawler().run()
+        
+        # 도매가 업로드
         PreprocessingDB().process()
-        PreprocessingDB().preprocess_retail_data()
         DailyUploader().run_all()
+        
+        # 소매가 업로드
+        PreprocessingDB().preprocess_retail_data()
         RetailDataUploader().upload_all()
 
         # continuous 학습 후 db에 올림
-        PredictionManager().continuous()
-        PredictDataUploader().upload_all()
+        # PredictionManager().continuous()
+        # PredictDataUploader().upload_all()
 
     # 사운드 재생
         try:

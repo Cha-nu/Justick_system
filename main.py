@@ -20,8 +20,8 @@ if __name__ == "__main__":
         RetailDataUploader().upload_all()
 
         # continuous 학습 후 db에 올림
-        # PredictionManager().continuous()
-        # PredictDataUploader().upload_all()
+        PredictionManager().continuous()
+        PredictDataUploader().upload_all()
 
     # 사운드 재생
         try:

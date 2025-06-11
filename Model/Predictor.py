@@ -160,7 +160,7 @@ class Predictor:
             pred = self.model(last_input).item()
             pred_log = self.scaler_y.inverse_transform([[pred]])[0][0]
             pred_rescaled = np.expm1(pred_log)
-            next_date = cutoff + pd.Timedelta(days=1)
+            next_date = df['date'].iloc[-1] + pd.Timedelta(days=1)
             self.results.append((next_date, pred_rescaled, None))
 
     def update_one_day(self, df_raw, months=[4, 5, 6], rate="SPECIAL"):

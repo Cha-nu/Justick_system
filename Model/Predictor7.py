@@ -164,7 +164,7 @@ class Predictor7:
             pred = self.model(last_input).squeeze(0).numpy()
             pred_log = self.scaler_y.inverse_transform(pred.reshape(-1, 1)).flatten()
             pred_rescaled = np.expm1(pred_log)
-            start_date = cutoff + pd.Timedelta(days=1)
+            start_date = df['date'].iloc[-1] + pd.Timedelta(days=1)
             for i in range(7):
                 self.results.append((start_date + pd.Timedelta(days=i), pred_rescaled[i], None))
 

@@ -26,13 +26,30 @@ class Crawler:
         self.options.set_preference("browser.download.manager.showWhenStarting", False)
         self.options.set_preference("pdfjs.disabled", True)
 
+    def safe_click(self, driver, by, value, max_try=3):
+        wait = WebDriverWait(driver, 15)
+        for i in range(max_try):
+            try:
+                elem = wait.until(EC.element_to_be_clickable((by, value)))
+                elem.click()
+                return True
+            except Exception as e:
+                print(f"[safe_click] 클릭 실패({i+1}/{max_try}): {e}")
+                time.sleep(2)
+        return False
+
     def select_dropdown(self, driver, index, value):
-        WebDriverWait(driver, 20).until(
-        EC.invisibility_of_element_located((By.CLASS_NAME, "qv-ui-blocker"))
-    )
+        # 충분히 대기 후 드롭다운 리스트 갱신
+        WebDriverWait(driver, 30).until(
+            EC.invisibility_of_element_located((By.CLASS_NAME, "qv-ui-blocker"))
+        )
         dropdowns = driver.find_elements(By.CLASS_NAME, "qui-select")
+        if index >= len(dropdowns):
+            print(f"[select_dropdown] 드롭다운 index {index} 없음: 총 {len(dropdowns)}개")
+            raise IndexError(f"드롭다운 index {index} 없음")
         select = Select(dropdowns[index])
         select.select_by_visible_text(value)
+
 
     def try_decode(self, val):
         if isinstance(val, str):
@@ -76,7 +93,7 @@ class Crawler:
                 service = Service(executable_path="/usr/local/bin/geckodriver")
                 driver = webdriver.Firefox(service=service, options=self.options)
 
-                wait = WebDriverWait(driver, 20)
+                wait = WebDriverWait(driver, 30)
                 driver.get(url)
                 time.sleep(15)
                 wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, "qv-ui-blocker")))
@@ -95,8 +112,7 @@ class Crawler:
                     try:
                         print(f"{item_name} 처리 중...")
                         wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, "qv-ui-blocker")))
-                        dropdown_trigger = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "select2-selection")))
-                        dropdown_trigger.click()
+                        self.safe_click(driver, By.CLASS_NAME, "select2-selection")
                         option_xpath = f"//li[contains(@class, 'select2-results__option') and text()='{item_name}']"
                         search_option = wait.until(EC.element_to_be_clickable((By.XPATH, option_xpath)))
                         search_option.click()

@@ -11,7 +11,7 @@ class PredictionManager:
         self.base_dir = base_dir
         self.model_dir = model_dir
 
-    def shift_dates_after_sundays(df):
+    def shift_dates_after_sundays(self,df):
         df = df.sort_values(by=["year", "month", "day"]).reset_index(drop=True)
         new_rows = []
         add_days = 0
@@ -65,7 +65,7 @@ class PredictionManager:
                 path = f"{self.base_dir}/{item}_predict.csv"
 
                 # 컬럼 재정렬 및 변환: price → avg_price
-                pred_28["avg_price"] = pred_28["price"]
+                pred_28["avg_price"] = pred_28["price"].round().astype(int)
                 pred_28 = pred_28[["year", "month", "day", "avg_price", "rate"]]
 
                 # 예측 값에서 일요일 만날때마다 +1씩하고 총 28개의 데이터를 남긴다.
@@ -117,11 +117,11 @@ class PredictionManager:
                 model1.save(grade, item, self.model_dir)
 
                 # 컬럼 재정렬 및 변환
-                pred_28["avg_price"] = pred_28["price"]
+                pred_28["avg_price"] = pred_28["price"].round().astype(int)
                 pred_28 = pred_28[["year", "month", "day", "avg_price", "rate"]]
 
                 # 예측 값에서 일요일 만날때마다 +1씩하고 총 28개의 데이터를 남긴다. 
-                red_28 = self.filter_sunday_and_trim(pred_28)
+                pred_28 = self.shift_dates_after_sundays(pred_28)
 
                 # 기존 파일 불러오기
                 path = f"{self.base_dir}/{item}_predict.csv"

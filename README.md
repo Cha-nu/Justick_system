@@ -13,3 +13,6 @@ sudo mv geckodriver /usr/local/bin/
 
 ### selenium을 설치합니다.
 pip3 install selenium==4.5.0
+
+### 다른 의존성 패키지
+pip3 install numpy pandas torch playsound
